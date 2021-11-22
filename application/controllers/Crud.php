@@ -8,8 +8,60 @@
             $this->load->model('m_data');
             $this->load->helper('url');
         }
+        
+        //registrasi
+
+        function register(){
+            $this->load->view('register/register');
+        }
+
+        function tambah_registrasi(){
+            $nama_pekerja = $this->input->post('nama_pekerja');
+            $username = $this->input->post('username');
+            $password = $this->input->post('password');
+
+
+            $data = array(
+                'nama_pekerja' => $nama_pekerja,
+                'username' => $username,
+                'password' => $password
+                );
+            $this->m_data->tambahregistrasi_data($data,'data_user');
+            redirect('crud/login');
+        }
+
+        //login
+
+        function login(){
+            $this->load->view('login/login');
+        }
+
+        function aksi_login(){
+            $username = $this->input->post('username');
+            $password = $this->input->post('password');
+            $where = array(
+                'username' => $username,
+                'password' => $password
+                );
+            $cek = $this->m_data->cek_login("data_user",$where)->num_rows();
+            if($cek > 0){
+     
+                $data_session = array(
+                    'nama' => $username,
+                    'status' => "login"
+                    );
+     
+                $this->session->set_userdata($data_session);
+     
+                redirect("crud/index");
+     
+            }else{
+                echo "Username dan password salah !";
+            }
+        }
 
         //tabel timesheet
+
 
         function index(){
             //echo "ini adalah method index di controller crud";
@@ -43,7 +95,7 @@
                 'progress' => $progress
                 );
             $this->m_data->input_data($data,'tbl_timesheet');
-            redirect('crud/');
+            redirect('crud/index');
         }
 
         function edit($no_timesheet){
@@ -81,13 +133,13 @@
             );
          
             $this->m_data->update_data($where,$data,'tbl_timesheet');
-            redirect('crud/');
+            redirect('crud/index');
         }
 
         function hapus($no_timesheet){
             $where = array('no_timesheet' => $no_timesheet);
             $this->m_data->hapus_data($where,'tbl_timesheet');
-            redirect('crud/');
+            redirect('crud/index');
         }
 
         //spreadsheet
